@@ -47,7 +47,13 @@ public class JpaBasicApplication {
 				System.out.println("member.name = " + m.getName());
 			}
 
-			tx.commit();
+			Member member1 = em.find(Member.class, 1L); // DB 에서 조회하여 1차 캐시로 올림
+			member1.setName("aaaaa"); // 나중에 더티 체킹할 것임
+
+			em.clear(); // 영속성 컨텍스트를 다 지워버림
+
+			Member member2 = em.find(Member.class, 1L); // 다시 DB 에서 조회하여 1차 캐시로 올림, 쿼리가 2번 반영됨
+			tx.commit(); // 트랜잭션 커밋
 
 		} catch (Exception e) {
 			tx.rollback();
